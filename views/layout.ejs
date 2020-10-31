@@ -21,25 +21,43 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item ">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
+
+
+                <!--Need to check that if user is logged in or not -->
                 <li class="nav-item">
                     <a class="nav-link" href="/book">Add Book </a>
                 </li>
+                <li class="nav-item">
+                    <form id="logOut" action="/logout" method="POST">
+                        <a class="nav-link" onclick="document.getElementById('logOut').submit()" href="#">Logout</a>
+                    </form>
+
+                </li>
+
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+
+
+
 
                 <li class="nav-item">
                     <a class="nav-link" href="/login">Login </a>
                 </li>
+
+
                 <li class="nav-item">
                     <a class="nav-link" href="/register">Register</a>
                 </li>
+
+
+
+
 
             </ul>
 
         </div>
     </nav>
-
 
     <%- body  %>
 
