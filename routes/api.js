@@ -22,11 +22,11 @@ let storage = multer.diskStorage({
 let uploads = multer({
         storage,
         limits: { fileSize: 1000000 * 300 } //300 mb file size
-    }).single('myfile') //this is the name from front end 
+    }).single('file') //this is the name from front end 
 
 
 
-
+//*Sending Books Data to the home page 
 router.get('/', async(req, res) => {
 
     const books = await Book.find();
@@ -111,104 +111,13 @@ router.post('/register', (req, res) => {
     }
 })
 
-router.get('/book', (req, res) => {
-    res.render('addBook');
-})
-
-
-//Adding a Book To Data Base 
-router.post('/book', (req, res) => {
-    //TODO: This route is not Working need to delete joi and add simple validation  and check for file system
-
-    uploads(req, res, async(err) => {
-
-        const { name, type, language, author, publisher } = req.body;
-        if (!req.file) {
-            req.flash('error', "Please Upload a file ");
-            return res.status(400).render('addBook');
-        }
-        if (err) {
-
-            req.flash('error', "Something Went Wrong With File Upload ");
-            return res.status(400).render('addBook')
-
-        }
-        //Bring in joi Validation 
-        const schema = Joi.object({
-            name: Joi.string().min(3).max(20).required(),
-            type: Joi.string().min(3).max(20).required(),
-            language: Joi.string().min(3).max(20).required(),
-            author: Joi.string().min(3).max(20).required(),
-            publisher: Joi.string().min(3).max(20).required(),
-        })
-
-
-        //Now Validating My Result 
-        const { error } = schema.validate({
-            name,
-            type,
-            language,
-            author,
-            publisher
-        });
-
-        if (error) {
-
-            req.flash('error', "All The Fields Are Required ");
-            return res.render('addBook');
-
-        } else {
-            //Save book to Data Base
-            Book.findOne({ name: name })
-                .then(book => {
-                    if (book) {
-
-                        req.flash('error', "Book is already Present in database ");
-                        return res.render('addBook');
-                    } else {
-                        const newBook = new Book({
-                            name,
-                            type,
-                            language,
-                            author,
-                            publisher,
-                            file: req.file.filename
-                        })
-                        console.log(newBook);
-                        newBook.save()
-                            .then(result => {
-                                req.flash('success', 'Book Added To The Database ')
-                                return res.redirect('/')
-                            })
-                            .catch(err => {
-
-                                req.flash('error', 'Book Didnot added in database something went wrong')
-                                return res.render('addBook')
-
-                            })
-
-                    }
-
-                })
-
-        }
-
-
-    })
-
-
-
-
-})
-
-router.post('/add-book', (req, res) => {
-    console.log(res.body);
-    return res.json({ 'message': 'Nothing occured' });
-})
 
 
 router.post('/logout', (req, res) => {
     req.logOut()
     res.redirect('/login');
 })
+
+
+
 module.exports = router

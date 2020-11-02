@@ -11,6 +11,7 @@ const connectDB = require('./config/db')
 const session = require('express-session')
 const flash = require('express-flash');
 const passport = require('passport');
+const flashMessageMiddleware = require('./modal/middleware/flashMessage');
 
 //*Bringing in Passport Js file
 
@@ -27,13 +28,14 @@ app.use(morgan('dev'));
 //* Bring In Mongo Db Connection
 connectDB();
 
-app.use(bodyParser.urlencoded({ extended: false }))
+//app.use(bodyParser.urlencoded({ extended: false }))
 
 //Setting  Up view engine
 app.use(expressLayouts)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs')
 
+app.use(express.json())
 
 //*Express Session Middleware
 app.use(session({
@@ -50,17 +52,21 @@ app.use(passport.session());
 
 
 
-app.use(flash());
+
 
 app.use((req, res, next) => {
-    res.locals.error = req.flash('error');
     res.locals.user = req.user; //global user provided by passport js 
     next();
 
 })
 
+app.use(flash());
+app.use(flashMessageMiddleware.flashMessage);
+
+
 
 //! Setting up Books Routes
 app.use('/', bookRoutes);
+app.use('/book', require('./routes/registerBook'))
 
 app.listen(PORT, () => console.log(`Port Listening on http://localhost:${PORT}`))
